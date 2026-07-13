@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Security.Domain\Security.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Abstractions\BuildingBlocks.Messaging.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

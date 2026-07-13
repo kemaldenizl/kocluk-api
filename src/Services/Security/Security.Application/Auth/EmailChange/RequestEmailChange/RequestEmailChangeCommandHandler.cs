@@ -1,6 +1,6 @@
 using MediatR;
 using Security.Application.Abstractions.Auditing;
-using Security.Application.Abstractions.Messaging;
+using BuildingBlocks.Messaging.Abstractions;
 using Security.Application.Abstractions.Messaging.IntegrationEvents;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;

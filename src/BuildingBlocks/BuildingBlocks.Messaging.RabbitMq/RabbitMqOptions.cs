@@ -1,4 +1,4 @@
-namespace Security.Infrastructure.Messaging;
+namespace BuildingBlocks.Messaging.RabbitMq;
 
 public sealed class RabbitMqOptions
 {

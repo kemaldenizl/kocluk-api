@@ -1,3 +1,5 @@
+using BuildingBlocks.Messaging.Abstractions;
+
 namespace Security.Application.Abstractions.Messaging.IntegrationEvents;
 
 /// <summary>
@@ -11,4 +13,4 @@ public sealed record TenantUpdatedIntegrationEvent(
     string Name,
     string Slug,
     bool IsActive,
-    DateTime OccurredOnUtc);
+    DateTime OccurredOnUtc) : IIntegrationEvent;

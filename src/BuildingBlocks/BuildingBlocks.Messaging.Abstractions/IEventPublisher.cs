@@ -1,4 +1,4 @@
-namespace Security.Application.Abstractions.Messaging;
+namespace BuildingBlocks.Messaging.Abstractions;
 
 public interface IEventPublisher
 {

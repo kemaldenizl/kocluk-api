@@ -1,3 +1,4 @@
+using BuildingBlocks.Domain;
 using Security.Domain.Abstractions;
 using Security.Domain.Common;
 

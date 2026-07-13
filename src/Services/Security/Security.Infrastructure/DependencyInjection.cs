@@ -27,9 +27,8 @@ using Security.Application.Abstractions.RequestContext;
 using Security.Infrastructure.Auditing;
 using Security.Infrastructure.RequestContext;
 using Microsoft.AspNetCore.Mvc;
+using BuildingBlocks.Messaging.RabbitMq;
 using MassTransit;
-using Security.Application.Abstractions.Messaging;
-using Security.Infrastructure.Messaging;
 using Security.Infrastructure.Messaging.Consumers;
 using Security.Application.Abstractions.Tenancy;
 using Security.Infrastructure.Tenancy;
@@ -304,35 +303,15 @@ public static class DependencyInjection
 
         services.AddDataProtection();
 
-        var rabbitMqOptions = configuration.GetSection(RabbitMqOptions.SectionName).Get<RabbitMqOptions>()
-                              ?? throw new InvalidOperationException("RabbitMq configuration section is missing.");
-
-        services.AddMassTransit(x =>
+        // Shared RabbitMQ/MassTransit plumbing (outbox, host, IEventPublisher) lives in a building block.
+        // This service stays independent: it owns its DbContext and registers only its own consumers.
+        services.AddRabbitMqMessaging<SecurityDbContext>(configuration, x =>
         {
-            x.AddEntityFrameworkOutbox<SecurityDbContext>(outbox =>
-            {
-                outbox.UsePostgres();
-                outbox.UseBusOutbox();
-            });
-
             // Tenant lifecycle is owned by the Tenant microservice; we consume its events to keep a
             // local tenant read model in sync (used to validate tenants on incoming requests).
             x.AddConsumer<TenantCreatedConsumer>();
             x.AddConsumer<TenantUpdatedConsumer>();
-
-            x.UsingRabbitMq((context, cfg) =>
-            {
-                cfg.Host(rabbitMqOptions.Host, rabbitMqOptions.VirtualHost, host =>
-                {
-                    host.Username(rabbitMqOptions.Username);
-                    host.Password(rabbitMqOptions.Password);
-                });
-
-                cfg.ConfigureEndpoints(context);
-            });
         });
-
-        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
 
         return services;
     }

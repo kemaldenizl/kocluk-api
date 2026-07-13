@@ -1,7 +1,7 @@
+using BuildingBlocks.Messaging.Abstractions;
 using MassTransit;
-using Security.Application.Abstractions.Messaging;
 
-namespace Security.Infrastructure.Messaging;
+namespace BuildingBlocks.Messaging.RabbitMq;
 
 public sealed class MassTransitEventPublisher(IPublishEndpoint publishEndpoint) : IEventPublisher
 {

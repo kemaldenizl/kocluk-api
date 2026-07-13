@@ -1,4 +1,4 @@
-namespace Security.Domain.Abstractions;
+namespace BuildingBlocks.Domain;
 
 public abstract class Entity
 {
