@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-api
+  namespace: kocluk
+  labels: { app: notification-api }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: notification-api }
+  template:
+    metadata:
+      labels: { app: notification-api }
+    spec:
+      containers:
+        - name: notification-api
+          image: kocluk/notification-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: kocluk-config }
+          env:
+            - name: ConnectionStrings__Postgres
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Notification__ConnectionStrings__Postgres } }
+            - name: RabbitMq__Username
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_USER } }
+            - name: RabbitMq__Password
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_PASSWORD } }
+            - name: Resend__ApiKey
+              value: ""
+          livenessProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: { cpu: "100m", memory: "192Mi" }
+            limits: { cpu: "1", memory: "512Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-api
+  namespace: kocluk
+spec:
+  selector: { app: notification-api }
+  ports:
+    - port: 8080
+      targetPort: 8080

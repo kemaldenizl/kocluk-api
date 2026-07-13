@@ -1,0 +1,37 @@
+# Non-secret, shared configuration. Values here are safe to commit.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kocluk-config
+  namespace: kocluk
+data:
+  ASPNETCORE_ENVIRONMENT: "Development"
+  RabbitMq__Host: "rabbitmq"
+  Jwt__Issuer: "SecurityService"
+  Jwt__Audience: "SecurityService.Clients"
+  IdentitySeed__AdminEmail: "admin@local"
+  # Gateway -> downstream service addresses (in-cluster DNS).
+  ReverseProxy__Clusters__security-cluster__Destinations__primary__Address: "http://security-api:8080/"
+  ReverseProxy__Clusters__security-cluster__Destinations__primary__Health: "http://security-api:8080/health/ready"
+  ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Address: "http://tenant-api:8080/"
+  ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Health: "http://tenant-api:8080/health/ready"
+---
+# Demo secret. REPLACE every value before using anywhere real; prefer an external
+# secret manager (Sealed Secrets, External Secrets, SOPS, cloud KMS) in practice.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kocluk-secrets
+  namespace: kocluk
+type: Opaque
+stringData:
+  POSTGRES_USER: "kocluk"
+  POSTGRES_PASSWORD: "kocluk"
+  RABBITMQ_USER: "kocluk"
+  RABBITMQ_PASSWORD: "kocluk"
+  Jwt__SigningKey: "super-long-development-signing-key-dummy-temp-devl-123456"
+  IdentitySeed__AdminPassword: "DummyPw123!"
+  # Full connection strings, one per service database.
+  Security__ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=kocluk_security;Username=kocluk;Password=kocluk;"
+  Tenant__ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=kocluk_tenant;Username=kocluk;Password=kocluk;"
+  Notification__ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=kocluk_notification;Username=kocluk;Password=kocluk;"
