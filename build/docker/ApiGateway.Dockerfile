@@ -1,6 +1,6 @@
 # Build context is the repository root so project references resolve.
 # Build from repo root:  docker build -f build/docker/ApiGateway.Dockerfile -t kocluk/api-gateway .
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
