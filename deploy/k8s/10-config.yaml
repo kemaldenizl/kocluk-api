@@ -12,9 +12,7 @@ data:
   IdentitySeed__AdminEmail: "admin@local"
   # Gateway -> downstream service addresses (in-cluster DNS).
   ReverseProxy__Clusters__security-cluster__Destinations__primary__Address: "http://security-api:8080/"
-  ReverseProxy__Clusters__security-cluster__Destinations__primary__Health: "http://security-api:8080/health/ready"
   ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Address: "http://tenant-api:8080/"
-  ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Health: "http://tenant-api:8080/health/ready"
 ---
 # Demo secret. REPLACE every value before using anywhere real; prefer an external
 # secret manager (Sealed Secrets, External Secrets, SOPS, cloud KMS) in practice.
