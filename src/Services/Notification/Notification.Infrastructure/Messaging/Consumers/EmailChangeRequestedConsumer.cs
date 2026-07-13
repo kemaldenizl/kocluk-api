@@ -9,7 +9,7 @@ public sealed class EmailChangeRequestedConsumer(ISender sender)
 {
     protected override NotificationType Type => NotificationType.EmailChange;
 
-    protected override (string Email, string Token, DateTime OccurredOnUtc) Extract(
+    protected override (Guid TenantId, string Email, string Token, DateTime OccurredOnUtc) Extract(
         EmailChangeRequestedIntegrationEvent message) =>
-        (message.Email, message.Token, message.OccurredOnUtc);
+        (message.TenantId, message.Email, message.Token, message.OccurredOnUtc);
 }

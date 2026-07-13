@@ -7,6 +7,7 @@ namespace BuildingBlocks.Messaging.Contracts;
 /// confirmed by email. Consumers send the confirmation mail carrying <see cref="Token"/>.
 /// </summary>
 public sealed record PasswordChangeRequestedIntegrationEvent(
+    Guid TenantId,
     Guid UserId,
     string Email,
     string Token,

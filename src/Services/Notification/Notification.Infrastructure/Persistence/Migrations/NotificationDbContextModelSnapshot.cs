@@ -240,6 +240,9 @@ namespace Notification.Infrastructure.Persistence.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -256,6 +259,9 @@ namespace Notification.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Status", "NextAttemptAtUtc")
                         .HasDatabaseName("ix_notifications_status_next_attempt");
+
+                    b.HasIndex("TenantId", "CreatedAtUtc")
+                        .HasDatabaseName("ix_notifications_tenant_created");
 
                     b.ToTable("notifications", "notification");
                 });

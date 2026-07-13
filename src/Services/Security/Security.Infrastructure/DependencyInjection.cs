@@ -311,6 +311,7 @@ public static class DependencyInjection
             // local tenant read model in sync (used to validate tenants on incoming requests).
             x.AddConsumer<TenantCreatedConsumer>();
             x.AddConsumer<TenantUpdatedConsumer>();
+            x.AddConsumer<TenantDeletedConsumer>();
         });
 
         return services;

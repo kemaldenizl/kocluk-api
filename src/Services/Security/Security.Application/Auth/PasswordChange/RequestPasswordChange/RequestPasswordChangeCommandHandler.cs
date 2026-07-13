@@ -4,6 +4,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.PasswordChange.Dtos;
@@ -23,6 +24,7 @@ public sealed class RequestPasswordChangeCommandHandler(
     IPasswordChangeTokenGenerator passwordChangeTokenGenerator,
     IPasswordHasher passwordHasher,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RequestPasswordChangeCommand, Result<RequestPasswordChangeResponse>>
@@ -69,6 +71,7 @@ public sealed class RequestPasswordChangeCommandHandler(
 
         await eventPublisher.PublishAsync(
             new PasswordChangeRequestedIntegrationEvent(
+                tenantContext.TenantId,
                 user.Id,
                 user.Email,
                 tokenPair.PlainTextToken,

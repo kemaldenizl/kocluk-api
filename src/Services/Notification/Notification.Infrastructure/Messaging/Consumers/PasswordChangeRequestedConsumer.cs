@@ -9,7 +9,7 @@ public sealed class PasswordChangeRequestedConsumer(ISender sender)
 {
     protected override NotificationType Type => NotificationType.PasswordChange;
 
-    protected override (string Email, string Token, DateTime OccurredOnUtc) Extract(
+    protected override (Guid TenantId, string Email, string Token, DateTime OccurredOnUtc) Extract(
         PasswordChangeRequestedIntegrationEvent message) =>
-        (message.Email, message.Token, message.OccurredOnUtc);
+        (message.TenantId, message.Email, message.Token, message.OccurredOnUtc);
 }

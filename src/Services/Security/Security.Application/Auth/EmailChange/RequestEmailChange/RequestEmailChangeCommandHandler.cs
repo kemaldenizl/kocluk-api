@@ -4,6 +4,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.EmailChange.Dtos;
@@ -23,6 +24,7 @@ public sealed class RequestEmailChangeCommandHandler(
     IEmailChangeTokenGenerator emailChangeTokenGenerator,
     IPasswordHasher passwordHasher,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RequestEmailChangeCommand, Result<RequestEmailChangeResponse>>
@@ -69,6 +71,7 @@ public sealed class RequestEmailChangeCommandHandler(
 
         await eventPublisher.PublishAsync(
             new EmailChangeRequestedIntegrationEvent(
+                tenantContext.TenantId,
                 user.Id,
                 user.Email,
                 tokenPair.PlainTextToken,

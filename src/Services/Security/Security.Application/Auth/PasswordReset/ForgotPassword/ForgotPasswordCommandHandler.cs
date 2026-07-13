@@ -4,6 +4,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.PasswordReset.Dtos;
@@ -21,6 +22,7 @@ public sealed class ForgotPasswordCommandHandler(
     IAuditLogFactory auditLogFactory,
     IPasswordResetTokenGenerator passwordResetTokenGenerator,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<ForgotPasswordCommand, Result<ForgotPasswordResponse>>
@@ -60,6 +62,7 @@ public sealed class ForgotPasswordCommandHandler(
 
             await eventPublisher.PublishAsync(
                 new PasswordResetRequestedIntegrationEvent(
+                    tenantContext.TenantId,
                     user.Id,
                     user.Email,
                     tokenPair.PlainTextToken,

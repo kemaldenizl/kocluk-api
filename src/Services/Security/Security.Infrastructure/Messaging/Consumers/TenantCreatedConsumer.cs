@@ -1,6 +1,6 @@
+using BuildingBlocks.Messaging.Contracts;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Security.Application.Abstractions.Messaging.IntegrationEvents;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;

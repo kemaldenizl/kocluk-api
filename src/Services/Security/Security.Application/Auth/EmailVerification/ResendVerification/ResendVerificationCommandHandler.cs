@@ -4,6 +4,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.EmailVerification.Dtos;
@@ -21,6 +22,7 @@ public sealed class ResendVerificationCommandHandler(
     IAuditLogFactory auditLogFactory,
     IEmailVerificationTokenGenerator emailVerificationTokenGenerator,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<ResendVerificationCommand, Result<ResendVerificationResponse>>
@@ -63,6 +65,7 @@ public sealed class ResendVerificationCommandHandler(
 
             await eventPublisher.PublishAsync(
                 new EmailVerificationRequestedIntegrationEvent(
+                    tenantContext.TenantId,
                     user.Id,
                     user.Email,
                     tokenPair.PlainTextToken,

@@ -25,6 +25,7 @@ public sealed class QueueNotificationCommandHandler(
 
         var notification = new DomainNotification(
             Guid.NewGuid(),
+            request.TenantId,
             request.Recipient,
             request.Type,
             template.Subject,

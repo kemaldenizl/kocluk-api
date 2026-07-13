@@ -15,6 +15,9 @@ public sealed class NotificationConfiguration : IEntityTypeConfiguration<DomainN
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
+        builder.Property(x => x.TenantId)
+            .IsRequired();
+
         builder.Property(x => x.Recipient)
             .HasMaxLength(320)
             .IsRequired();
@@ -66,6 +69,10 @@ public sealed class NotificationConfiguration : IEntityTypeConfiguration<DomainN
         // Serves the dispatcher poll: due-for-delivery rows ordered by their scheduled attempt time.
         builder.HasIndex(x => new { x.Status, x.NextAttemptAtUtc })
             .HasDatabaseName("ix_notifications_status_next_attempt");
+
+        // Supports per-tenant reads/reporting over the notification history.
+        builder.HasIndex(x => new { x.TenantId, x.CreatedAtUtc })
+            .HasDatabaseName("ix_notifications_tenant_created");
 
         builder.Ignore(x => x.DomainEvents);
     }
