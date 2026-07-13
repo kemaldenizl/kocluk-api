@@ -1,0 +1,46 @@
+name: Docker Build
+
+# Validates that every service/gateway image builds. No registry push and no
+# deployment yet — a target platform has not been chosen. When one is selected,
+# add login + push (or a deploy job) below; the build matrix already produces the
+# images ready to be tagged and shipped.
+
+on:
+  push:
+    branches: [ main, "feature/**" ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-images:
+    name: Build ${{ matrix.name }} image
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: api-gateway
+            dockerfile: build/docker/ApiGateway.Dockerfile
+          - name: security-api
+            dockerfile: build/docker/Security.API.Dockerfile
+          - name: tenant-api
+            dockerfile: build/docker/Tenant.API.Dockerfile
+          - name: notification-api
+            dockerfile: build/docker/Notification.API.Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: false
+          tags: kocluk/${{ matrix.name }}:ci
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security-api
+  namespace: kocluk
+  labels: { app: security-api }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: security-api }
+  template:
+    metadata:
+      labels: { app: security-api }
+    spec:
+      containers:
+        - name: security-api
+          image: kocluk/security-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: kocluk-config }
+          env:
+            - name: ConnectionStrings__Postgres
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Security__ConnectionStrings__Postgres } }
+            - name: ConnectionStrings__Redis
+              value: "redis:6379"
+            - name: RabbitMq__Username
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_USER } }
+            - name: RabbitMq__Password
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_PASSWORD } }
+            - name: Jwt__SigningKey
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Jwt__SigningKey } }
+            - name: IdentitySeed__AdminPassword
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: IdentitySeed__AdminPassword } }
+          livenessProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: { cpu: "100m", memory: "192Mi" }
+            limits: { cpu: "1", memory: "512Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: security-api
+  namespace: kocluk
+spec:
+  selector: { app: security-api }
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-api
+  namespace: kocluk
+  labels: { app: tenant-api }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: tenant-api }
+  template:
+    metadata:
+      labels: { app: tenant-api }
+    spec:
+      containers:
+        - name: tenant-api
+          image: kocluk/tenant-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: kocluk-config }
+          env:
+            - name: ConnectionStrings__Postgres
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Tenant__ConnectionStrings__Postgres } }
+            - name: RabbitMq__Username
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_USER } }
+            - name: RabbitMq__Password
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_PASSWORD } }
+          livenessProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 8080 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          resources:
+            requests: { cpu: "100m", memory: "192Mi" }
+            limits: { cpu: "1", memory: "512Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenant-api
+  namespace: kocluk
+spec:
+  selector: { app: tenant-api }
+  ports:
+    - port: 8080
+      targetPort: 8080
