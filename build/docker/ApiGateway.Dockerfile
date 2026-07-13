@@ -12,7 +12,7 @@ RUN dotnet publish "src/Gateway/ApiGateway/ApiGateway.csproj" \
     -o /app/publish \
     /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 ENV ASPNETCORE_URLS=http://+:8080 \
