@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using Security.Application.Abstractions.Auditing;
 using BuildingBlocks.Messaging.Abstractions;
-using Security.Application.Abstractions.Messaging.IntegrationEvents;
+using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
 using Security.Application.Abstractions.Time;
