@@ -13,6 +13,7 @@ namespace Notification.Domain.Notifications;
 public sealed class Notification : AggregateRoot
 {
     public Guid Id { get; private set; }
+    public Guid TenantId { get; private set; }
     public string Recipient { get; private set; } = default!;
     public NotificationType Type { get; private set; }
     public string Subject { get; private set; } = default!;
@@ -33,6 +34,7 @@ public sealed class Notification : AggregateRoot
 
     public Notification(
         Guid id,
+        Guid tenantId,
         string recipient,
         NotificationType type,
         string subject,
@@ -41,6 +43,7 @@ public sealed class Notification : AggregateRoot
         DateTime createdAtUtc)
     {
         Id = Guard.AgainstEmpty(id, nameof(id));
+        TenantId = Guard.AgainstEmpty(tenantId, nameof(tenantId));
         Recipient = Guard.AgainstNullOrWhiteSpace(recipient, nameof(recipient));
         Subject = Guard.AgainstNullOrWhiteSpace(subject, nameof(subject));
         HtmlBody = Guard.AgainstNullOrWhiteSpace(htmlBody, nameof(htmlBody));

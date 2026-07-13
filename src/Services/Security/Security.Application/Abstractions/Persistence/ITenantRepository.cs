@@ -11,4 +11,6 @@ public interface ITenantRepository
     Task<bool> ExistsActiveAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task AddAsync(Tenant tenant, CancellationToken cancellationToken = default);
+
+    void Remove(Tenant tenant);
 }

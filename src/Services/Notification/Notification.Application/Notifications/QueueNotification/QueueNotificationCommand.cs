@@ -9,6 +9,7 @@ namespace Notification.Application.Notifications.QueueNotification;
 /// derived deterministically from the source event so replays are de-duplicated.
 /// </summary>
 public sealed record QueueNotificationCommand(
+    Guid TenantId,
     NotificationType Type,
     string Recipient,
     string Token,

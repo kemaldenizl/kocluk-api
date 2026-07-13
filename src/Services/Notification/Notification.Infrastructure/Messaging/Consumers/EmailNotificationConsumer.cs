@@ -16,16 +16,16 @@ public abstract class EmailNotificationConsumer<TEvent>(ISender sender) : IConsu
 {
     protected abstract NotificationType Type { get; }
 
-    protected abstract (string Email, string Token, DateTime OccurredOnUtc) Extract(TEvent message);
+    protected abstract (Guid TenantId, string Email, string Token, DateTime OccurredOnUtc) Extract(TEvent message);
 
     public Task Consume(ConsumeContext<TEvent> context)
     {
-        var (email, token, occurredOnUtc) = Extract(context.Message);
+        var (tenantId, email, token, occurredOnUtc) = Extract(context.Message);
 
         // Deterministic key: the token is unique per request, so replays collapse onto the same notification.
         var idempotencyKey = $"{Type}:{token}";
 
-        var command = new QueueNotificationCommand(Type, email, token, occurredOnUtc, idempotencyKey);
+        var command = new QueueNotificationCommand(tenantId, Type, email, token, occurredOnUtc, idempotencyKey);
 
         return sender.Send(command, context.CancellationToken);
     }

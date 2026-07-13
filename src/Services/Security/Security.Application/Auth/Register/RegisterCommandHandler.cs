@@ -4,6 +4,7 @@ using Security.Application.Abstractions.Auditing;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.Dtos;
@@ -24,6 +25,7 @@ public sealed class RegisterCommandHandler(
     IPasswordHasher passwordHasher,
     IEmailVerificationTokenGenerator emailVerificationTokenGenerator,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
@@ -90,6 +92,7 @@ public sealed class RegisterCommandHandler(
 
         await eventPublisher.PublishAsync(
             new EmailVerificationRequestedIntegrationEvent(
+                tenantContext.TenantId,
                 user.Id,
                 user.Email,
                 tokenPair.PlainTextToken,

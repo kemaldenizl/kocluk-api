@@ -33,4 +33,11 @@ public sealed class TenantRepository(SecurityDbContext dbContext) : ITenantRepos
 
         return dbContext.Tenants.AddAsync(tenant, cancellationToken).AsTask();
     }
+
+    public void Remove(Tenant tenant)
+    {
+        ArgumentNullException.ThrowIfNull(tenant);
+
+        dbContext.Tenants.Remove(tenant);
+    }
 }

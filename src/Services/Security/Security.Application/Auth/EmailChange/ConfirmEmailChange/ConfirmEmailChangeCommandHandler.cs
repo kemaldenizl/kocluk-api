@@ -5,6 +5,7 @@ using BuildingBlocks.Messaging.Abstractions;
 using BuildingBlocks.Messaging.Contracts;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
+using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Common.Auditing;
@@ -25,6 +26,7 @@ public sealed class ConfirmEmailChangeCommandHandler(
     IEmailChangeTokenGenerator emailChangeTokenGenerator,
     IEmailVerificationTokenGenerator emailVerificationTokenGenerator,
     IEventPublisher eventPublisher,
+    ITenantContext tenantContext,
     IAccessTokenRevocationStore accessTokenRevocationStore,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork,
@@ -118,6 +120,7 @@ public sealed class ConfirmEmailChangeCommandHandler(
 
         await eventPublisher.PublishAsync(
             new EmailVerificationRequestedIntegrationEvent(
+                tenantContext.TenantId,
                 user.Id,
                 user.Email,
                 verificationTokenPair.PlainTextToken,

@@ -7,6 +7,7 @@ namespace BuildingBlocks.Messaging.Contracts;
 /// send the reset mail carrying <see cref="Token"/>.
 /// </summary>
 public sealed record PasswordResetRequestedIntegrationEvent(
+    Guid TenantId,
     Guid UserId,
     string Email,
     string Token,
