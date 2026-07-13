@@ -158,9 +158,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ReverseProxy__Clusters__security-cluster__Destinations__primary__Address: "http://security-api:8080/"
-      ReverseProxy__Clusters__security-cluster__Destinations__primary__Health: "http://security-api:8080/health/ready"
       ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Address: "http://tenant-api:8080/"
-      ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Health: "http://tenant-api:8080/health/ready"
     ports:
       - "${GATEWAY_PORT:-8080}:8080"
     depends_on:
