@@ -13,6 +13,9 @@ public sealed class User : AggregateRoot, ITenantScoped
     public string Email { get; private set; } = default!;
     public string NormalizedEmail { get; private set; } = default!;
     public string PasswordHash { get; private set; } = default!;
+    public string FirstName { get; private set; } = default!;
+    public string LastName { get; private set; } = default!;
+    public StudentType StudentType { get; private set; }
     public bool EmailVerified { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
@@ -29,16 +32,34 @@ public sealed class User : AggregateRoot, ITenantScoped
         string email,
         string normalizedEmail,
         string passwordHash,
+        string firstName,
+        string lastName,
+        StudentType studentType,
         DateTime createdAtUtc)
     {
         Id = Guard.AgainstEmpty(id, nameof(id));
         Email = Guard.AgainstNullOrWhiteSpace(email, nameof(email));
         NormalizedEmail = Guard.AgainstNullOrWhiteSpace(normalizedEmail, nameof(normalizedEmail));
         PasswordHash = Guard.AgainstNullOrWhiteSpace(passwordHash, nameof(passwordHash));
+        FirstName = Guard.AgainstNullOrWhiteSpace(firstName, nameof(firstName));
+        LastName = Guard.AgainstNullOrWhiteSpace(lastName, nameof(lastName));
+        StudentType = GuardAgainstUndefinedStudentType(studentType);
         CreatedAtUtc = Guard.AgainstDefault(createdAtUtc, nameof(createdAtUtc));
 
         EmailVerified = false;
         IsActive = true;
+    }
+
+    public void UpdateProfile(string? firstName, string? lastName, StudentType? studentType)
+    {
+        if (firstName is not null)
+            FirstName = Guard.AgainstNullOrWhiteSpace(firstName, nameof(firstName));
+
+        if (lastName is not null)
+            LastName = Guard.AgainstNullOrWhiteSpace(lastName, nameof(lastName));
+
+        if (studentType is not null)
+            StudentType = GuardAgainstUndefinedStudentType(studentType.Value);
     }
 
     public void MarkEmailVerified()
@@ -93,5 +114,14 @@ public sealed class User : AggregateRoot, ITenantScoped
             return;
 
         _roles.Remove(existing);
+    }
+
+    private static StudentType GuardAgainstUndefinedStudentType(StudentType studentType)
+    {
+        Guard.Against(
+            !Enum.IsDefined(studentType),
+            $"{nameof(studentType)} is not a valid student type.");
+
+        return studentType;
     }
 }

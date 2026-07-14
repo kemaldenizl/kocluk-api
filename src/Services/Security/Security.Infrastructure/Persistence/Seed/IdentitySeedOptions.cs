@@ -6,6 +6,6 @@ public sealed class IdentitySeedOptions
 
     public bool Enabled { get; init; } = true;
     public bool AllowInProduction { get; init; } = false;
-    public string AdminEmail { get; init; } = "admin@local";
+    public string AdminEmail { get; init; } = "admin@local.com";
     public string AdminPassword { get; init; } = "DummyPw123!";
 }

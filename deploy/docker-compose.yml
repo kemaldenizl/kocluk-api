@@ -87,7 +87,7 @@ services:
       Jwt__SigningKey: ${JWT_SIGNING_KEY}
       Jwt__Issuer: ${JWT_ISSUER:-SecurityService}
       Jwt__Audience: ${JWT_AUDIENCE:-SecurityService.Clients}
-      IdentitySeed__AdminEmail: ${ADMIN_EMAIL:-admin@local}
+      IdentitySeed__AdminEmail: ${ADMIN_EMAIL:-admin@local.com}
       IdentitySeed__AdminPassword: ${ADMIN_PASSWORD:-DummyPw123!}
     ports:
       - "${SECURITY_PORT:-8081}:8080"
@@ -136,6 +136,7 @@ services:
       RabbitMq__Username: ${RABBITMQ_USER:-kocluk}
       RabbitMq__Password: ${RABBITMQ_PASSWORD:-kocluk}
       Resend__ApiKey: ${RESEND_API_KEY:-}
+      Resend__FromEmail: ${RESEND_FROM_EMAIL:-no-reply@app.local}
     ports:
       - "${NOTIFICATION_PORT:-8083}:8080"
     depends_on:

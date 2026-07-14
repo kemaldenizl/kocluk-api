@@ -91,6 +91,9 @@ public static class ApplicationResultMapper
                 new UserResponse(
                     result.Value.User.Id,
                     result.Value.User.Email,
+                    result.Value.User.FirstName,
+                    result.Value.User.LastName,
+                    result.Value.User.StudentType,
                     result.Value.User.EmailVerified,
                     result.Value.User.IsActive));
 
@@ -108,6 +111,9 @@ public static class ApplicationResultMapper
                 new UserResponse(
                     result.Value.User.Id,
                     result.Value.User.Email,
+                    result.Value.User.FirstName,
+                    result.Value.User.LastName,
+                    result.Value.User.StudentType,
                     result.Value.User.EmailVerified,
                     result.Value.User.IsActive),
                 result.Value.Tokens is null

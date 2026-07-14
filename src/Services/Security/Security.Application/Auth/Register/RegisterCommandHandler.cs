@@ -49,6 +49,9 @@ public sealed class RegisterCommandHandler(
             request.Email.Trim(),
             normalizedEmail,
             passwordHasher.Hash(request.Password),
+            request.FirstName.Trim(),
+            request.LastName.Trim(),
+            request.StudentType,
             utcNow);
 
         await userRepository.AddAsync(user, cancellationToken);
@@ -101,7 +104,14 @@ public sealed class RegisterCommandHandler(
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var response = new RegisterResponse(new UserDto(user.Id, user.Email, user.EmailVerified, user.IsActive));
+        var response = new RegisterResponse(new UserDto(
+            user.Id,
+            user.Email,
+            user.FirstName,
+            user.LastName,
+            user.StudentType,
+            user.EmailVerified,
+            user.IsActive));
         return Result<RegisterResponse>.Success(response);
     }
 }

@@ -136,6 +136,9 @@ public sealed class IdentitySeeder(
                 _options.AdminEmail.Trim(),
                 normalizedEmail,
                 passwordHasher.Hash(_options.AdminPassword),
+                "System",
+                "Administrator",
+                StudentType.Other,
                 DateTime.UtcNow);
 
             adminUser.MarkEmailVerified();

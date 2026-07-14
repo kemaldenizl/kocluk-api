@@ -119,6 +119,9 @@ public sealed class LoginCommandHandler(
                     new UserDto(
                         user.Id,
                         user.Email,
+                        user.FirstName,
+                        user.LastName,
+                        user.StudentType,
                         user.EmailVerified,
                         user.IsActive),
                     null,
@@ -154,7 +157,14 @@ public sealed class LoginCommandHandler(
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var response = new LoginResponse(
-            new UserDto(user.Id, user.Email, user.EmailVerified, user.IsActive),
+            new UserDto(
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.StudentType,
+                user.EmailVerified,
+                user.IsActive),
             new AuthTokensDto(
                 accessToken.AccessToken,
                 accessToken.AccessTokenExpiresAtUtc,
