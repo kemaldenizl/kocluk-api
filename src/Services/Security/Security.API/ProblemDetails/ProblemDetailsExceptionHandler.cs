@@ -9,10 +9,19 @@ public sealed class ProblemDetailsExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var problem = httpContext.CreateProblemDetails(
-            StatusCodes.Status500InternalServerError,
-            "Internal Server Error",
-            "An unexpected error occurred.");
+        var (statusCode, title, detail) = exception switch
+        {
+            BadHttpRequestException badRequest => (
+                badRequest.StatusCode,
+                "Invalid request",
+                "The request body could not be read. Please check the format and field values."),
+            _ => (
+                StatusCodes.Status500InternalServerError,
+                "Internal Server Error",
+                "An unexpected error occurred.")
+        };
+
+        var problem = httpContext.CreateProblemDetails(statusCode, title, detail);
 
         await Results.Problem(problem).ExecuteAsync(httpContext);
 

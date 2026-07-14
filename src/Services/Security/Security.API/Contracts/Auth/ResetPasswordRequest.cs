@@ -1,4 +1,4 @@
 namespace Security.API.Contracts.Auth;
 
-public sealed record ResetPasswordRequest(string Token, string NewPassword);
+public sealed record ResetPasswordRequest(string Token, string NewPassword, string ConfirmNewPassword);
     

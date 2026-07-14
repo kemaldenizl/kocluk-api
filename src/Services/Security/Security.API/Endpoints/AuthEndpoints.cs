@@ -211,7 +211,11 @@ public static class AuthEndpoints
     {
         var command = new RegisterCommand(
             request.Email,
-            request.Password);
+            request.Password,
+            request.ConfirmPassword,
+            request.FirstName,
+            request.LastName,
+            request.StudentType);
 
         var result = await sender.Send(command, cancellationToken);
 
@@ -311,7 +315,7 @@ public static class AuthEndpoints
 
     private static async Task<IResult> ResetPasswordAsync(ResetPasswordRequest request, HttpContext httpContext, ISender sender, CancellationToken cancellationToken)
     {
-        var command = new ResetPasswordCommand(request.Token, request.NewPassword);
+        var command = new ResetPasswordCommand(request.Token, request.NewPassword, request.ConfirmNewPassword);
         var result = await sender.Send(command, cancellationToken);
 
         return httpContext.ToApiResult(result);
@@ -329,7 +333,7 @@ public static class AuthEndpoints
 
     private static async Task<IResult> ConfirmPasswordChangeAsync(ConfirmPasswordChangeRequest request, HttpContext httpContext, ISender sender, CancellationToken cancellationToken)
     {
-        var command = new ConfirmPasswordChangeCommand(request.Token, request.NewPassword);
+        var command = new ConfirmPasswordChangeCommand(request.Token, request.NewPassword, request.ConfirmNewPassword);
         var result = await sender.Send(command, cancellationToken);
 
         return httpContext.ToApiResult(result);
