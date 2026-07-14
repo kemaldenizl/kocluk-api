@@ -18,5 +18,9 @@ public sealed class ResetPasswordCommandValidator : AbstractValidator<ResetPassw
             .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
             .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one non-alphanumeric character.");
+
+        RuleFor(x => x.ConfirmNewPassword)
+            .NotEmpty()
+            .Equal(x => x.NewPassword).WithMessage("Passwords do not match.");
     }
 }

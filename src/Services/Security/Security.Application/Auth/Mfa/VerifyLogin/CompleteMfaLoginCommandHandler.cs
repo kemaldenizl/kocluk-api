@@ -116,7 +116,14 @@ public sealed class CompleteMfaLoginCommandHandler(
 
         return Result<LoginResponse>.Success(
             new LoginResponse(
-                new UserDto(user.Id, user.Email, user.EmailVerified, user.IsActive),
+                new UserDto(
+                    user.Id,
+                    user.Email,
+                    user.FirstName,
+                    user.LastName,
+                    user.StudentType,
+                    user.EmailVerified,
+                    user.IsActive),
                 new AuthTokensDto(
                     accessToken.AccessToken,
                     accessToken.AccessTokenExpiresAtUtc,

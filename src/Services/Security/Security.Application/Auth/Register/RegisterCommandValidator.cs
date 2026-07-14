@@ -19,5 +19,20 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
             .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
             .Matches("[0-9]").WithMessage("Password must contain at least one digit.")
             .Matches("[^a-zA-Z0-9]").WithMessage("Password must contain at least one non-alphanumeric character.");
+
+        RuleFor(x => x.ConfirmPassword)
+            .NotEmpty()
+            .Equal(x => x.Password).WithMessage("Passwords do not match.");
+
+        RuleFor(x => x.FirstName)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(x => x.LastName)
+            .NotEmpty()
+            .MaximumLength(100);
+
+        RuleFor(x => x.StudentType)
+            .IsInEnum();
     }
 }
