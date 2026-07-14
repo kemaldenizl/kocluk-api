@@ -9,7 +9,7 @@ data:
   RabbitMq__Host: "rabbitmq"
   Jwt__Issuer: "SecurityService"
   Jwt__Audience: "SecurityService.Clients"
-  IdentitySeed__AdminEmail: "admin@local"
+  IdentitySeed__AdminEmail: "admin@local.com"
   # Gateway -> downstream service addresses (in-cluster DNS).
   ReverseProxy__Clusters__security-cluster__Destinations__primary__Address: "http://security-api:8080/"
   ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Address: "http://tenant-api:8080/"
