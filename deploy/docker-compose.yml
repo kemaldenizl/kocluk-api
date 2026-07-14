@@ -136,6 +136,7 @@ services:
       RabbitMq__Username: ${RABBITMQ_USER:-kocluk}
       RabbitMq__Password: ${RABBITMQ_PASSWORD:-kocluk}
       Resend__ApiKey: ${RESEND_API_KEY:-}
+      Resend__FromEmail: ${RESEND_FROM_EMAIL:-no-reply@app.local}
     ports:
       - "${NOTIFICATION_PORT:-8083}:8080"
     depends_on:
