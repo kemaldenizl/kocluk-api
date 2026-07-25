@@ -1,5 +1,6 @@
 using MediatR;
 using Security.API.Common;
+using Security.API.Common.Auth;
 using Security.API.Common.ErrorMapping;
 using Security.API.Contracts.Permissions;
 using Security.API.Contracts.Roles;
@@ -118,11 +119,14 @@ public static class RoleEndpoints
     }
 
     private static async Task<IResult> GetRolesAsync(
+        Guid tenantId,
         HttpContext httpContext,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetRolesQuery(), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(new GetRolesQuery(tenantId, currentUser.UserId), cancellationToken);
 
         if (result.IsFailure)
             return httpContext.ToApiResult(result);
@@ -140,7 +144,9 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new GetRoleByIdQuery(id), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(new GetRoleByIdQuery(id, currentUser.UserId), cancellationToken);
 
         if (result.IsFailure)
             return httpContext.ToApiResult(result);
@@ -154,7 +160,10 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new CreateRoleCommand(request.Name), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(
+            new CreateRoleCommand(request.TenantId, currentUser.UserId, request.Name), cancellationToken);
 
         if (result.IsFailure)
             return httpContext.ToApiResult(result);
@@ -171,7 +180,9 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new RenameRoleCommand(id, request.Name), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(new RenameRoleCommand(id, currentUser.UserId, request.Name), cancellationToken);
 
         return httpContext.ToApiResult(result);
     }
@@ -182,7 +193,9 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new DeleteRoleCommand(id), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(new DeleteRoleCommand(id, currentUser.UserId), cancellationToken);
 
         return httpContext.ToApiResult(result);
     }
@@ -194,7 +207,10 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new AddPermissionToRoleCommand(id, request.PermissionId), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(
+            new AddPermissionToRoleCommand(id, currentUser.UserId, request.PermissionId), cancellationToken);
 
         return httpContext.ToApiResult(result);
     }
@@ -206,7 +222,10 @@ public static class RoleEndpoints
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new RemovePermissionFromRoleCommand(id, permissionId), cancellationToken);
+        var currentUser = httpContext.User.ToCurrentUser();
+
+        var result = await sender.Send(
+            new RemovePermissionFromRoleCommand(id, currentUser.UserId, permissionId), cancellationToken);
 
         return httpContext.ToApiResult(result);
     }
