@@ -2,8 +2,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Security.Domain\Security.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Authorization.Abstractions\BuildingBlocks.Authorization.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Abstractions\BuildingBlocks.Messaging.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.Contracts\BuildingBlocks.Messaging.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="BuildingBlocks.Authorization" />
   </ItemGroup>
 
   <ItemGroup>

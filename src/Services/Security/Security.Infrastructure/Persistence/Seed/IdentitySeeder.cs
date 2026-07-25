@@ -69,21 +69,7 @@ public sealed class IdentitySeeder(
 
     private async Task SeedPermissionsAsync(CancellationToken cancellationToken)
     {
-        var permissionCodes = new[]
-        {
-            PermissionCodes.UsersRead,
-            PermissionCodes.UsersManage,
-            PermissionCodes.RolesRead,
-            PermissionCodes.RolesManage,
-            PermissionCodes.PermissionsRead,
-            PermissionCodes.PermissionsManage,
-            PermissionCodes.SessionsRead,
-            PermissionCodes.SessionsManage,
-            PermissionCodes.MembersRead,
-            PermissionCodes.MembersManage,
-            PermissionCodes.TenantsRead,
-            PermissionCodes.TenantsManage
-        };
+        var permissionCodes = PermissionCatalog.All;
 
         var existingCodes = await dbContext.Permissions
             .AsNoTracking()

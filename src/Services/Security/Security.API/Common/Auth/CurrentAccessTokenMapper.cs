@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Security.Claims;
-using Security.Application.Common.Security;
 
 namespace Security.API.Common.Auth;
 

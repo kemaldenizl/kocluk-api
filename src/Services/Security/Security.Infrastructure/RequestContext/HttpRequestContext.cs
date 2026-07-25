@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Security.Application.Abstractions.RequestContext;
-using Security.Application.Common.Security;
 
 namespace Security.Infrastructure.RequestContext;
 
