@@ -1,19 +1,23 @@
 using MediatR;
 using Microsoft.Extensions.Options;
 using Security.Application.Abstractions.Auditing;
+using Security.Application.Abstractions.Memberships;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.Security;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Common.Auditing;
+using Security.Application.Common.Authorization;
 using Security.Application.Common.Errors;
 using Security.Application.Common.Results;
 using Security.Domain.Auditing;
+using Security.Domain.Authorization;
 
 namespace Security.Application.Roles.DeleteRole;
 
 public sealed class DeleteRoleCommandHandler(
     IRoleRepository roleRepository,
+    ITenantAccessAuthorizer tenantAccessAuthorizer,
     IAuditLogRepository auditLogRepository,
     IAuditLogFactory auditLogFactory,
     IAccessTokenRevocationStore accessTokenRevocationStore,
@@ -32,9 +36,14 @@ public sealed class DeleteRoleCommandHandler(
         if (role is null)
             return Result.Failure(RoleErrors.NotFound);
 
+        var authorized = await RoleAccessGuard.CanActAsync(
+            tenantAccessAuthorizer, role, request.CallerUserId, PermissionCodes.RolesManage, cancellationToken);
+        if (!authorized)
+            return Result.Failure(AccessErrors.Forbidden);
+
         var utcNow = dateTimeProvider.UtcNow;
 
-        var affectedUserIds = await roleRepository.GetUserIdsByRoleIdAsync(role.Id, cancellationToken);
+        var affectedUserIds = await roleRepository.GetActiveUserIdsByRoleIdAsync(role.Id, cancellationToken);
 
         roleRepository.Remove(role);
 

@@ -1,10 +1,10 @@
 using MediatR;
 using Security.Application.Abstractions.Authentication;
 using Security.Application.Abstractions.Auditing;
+using Security.Application.Abstractions.Memberships;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.RequestContext;
 using Security.Application.Abstractions.Security;
-using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.Dtos;
@@ -18,14 +18,13 @@ namespace Security.Application.Auth.Refresh;
 
 public sealed class RefreshTokenCommandHandler(
     IUserRepository userRepository,
-    IRoleRepository roleRepository,
+    IMembershipQueryService membershipQueryService,
     IRefreshSessionRepository refreshSessionRepository,
     IAuditLogRepository auditLogRepository,
     IAuditLogFactory auditLogFactory,
     IRequestContext requestContext,
     IRefreshTokenGenerator refreshTokenGenerator,
     ITokenGenerator tokenGenerator,
-    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<RefreshTokenCommand, Result<RefreshTokenResponse>>
@@ -93,13 +92,12 @@ public sealed class RefreshTokenCommandHandler(
 
         existingToken.Consume(utcNow);
 
-        var permissions = await roleRepository.GetPermissionCodesByUserIdAsync(user.Id, cancellationToken);
+        var accessContext = await membershipQueryService.GetAccessContextAsync(user.Id, cancellationToken);
 
         var accessToken = await tokenGenerator.GenerateAccessTokenAsync(
             user.Id,
-            tenantContext.TenantId,
             user.Email,
-            permissions,
+            accessContext,
             session.Id,
             cancellationToken);
 

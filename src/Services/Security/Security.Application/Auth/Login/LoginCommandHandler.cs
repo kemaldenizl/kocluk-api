@@ -1,10 +1,10 @@
 using MediatR;
 using Security.Application.Abstractions.Authentication;
 using Security.Application.Abstractions.Auditing;
+using Security.Application.Abstractions.Memberships;
 using Security.Application.Abstractions.Persistence;
 using Security.Application.Abstractions.RequestContext;
 using Security.Application.Abstractions.Security;
-using Security.Application.Abstractions.Tenancy;
 using Security.Application.Abstractions.Time;
 using Security.Application.Abstractions.UnitOfWork;
 using Security.Application.Auth.Dtos;
@@ -19,7 +19,7 @@ namespace Security.Application.Auth.Login;
 
 public sealed class LoginCommandHandler(
     IUserRepository userRepository,
-    IRoleRepository roleRepository,
+    IMembershipQueryService membershipQueryService,
     IRefreshSessionRepository refreshSessionRepository,
     IMfaMethodRepository mfaMethodRepository,
     IAuditLogRepository auditLogRepository,
@@ -29,7 +29,6 @@ public sealed class LoginCommandHandler(
     IRefreshTokenGenerator refreshTokenGenerator,
     ITokenGenerator tokenGenerator,
     IMfaChallengeTokenService mfaChallengeTokenService,
-    ITenantContext tenantContext,
     IDateTimeProvider dateTimeProvider,
     IUnitOfWork unitOfWork)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
@@ -131,13 +130,12 @@ public sealed class LoginCommandHandler(
                     true));
         }
 
-        var permissions = await roleRepository.GetPermissionCodesByUserIdAsync(user.Id, cancellationToken);
+        var accessContext = await membershipQueryService.GetAccessContextAsync(user.Id, cancellationToken);
 
         var accessToken = await tokenGenerator.GenerateAccessTokenAsync(
             user.Id,
-            tenantContext.TenantId,
             user.Email,
-            permissions,
+            accessContext,
             session.Id,
             cancellationToken);
 

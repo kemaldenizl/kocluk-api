@@ -5,5 +5,6 @@ using Security.Application.Roles.Dtos;
 namespace Security.Application.Roles.GetRoleById;
 
 public sealed record GetRoleByIdQuery(
-    Guid RoleId
+    Guid RoleId,
+    Guid CallerUserId
 ) : IRequest<Result<RoleDto>>;
