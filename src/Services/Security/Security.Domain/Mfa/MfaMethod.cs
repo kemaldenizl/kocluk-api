@@ -1,15 +1,13 @@
 using BuildingBlocks.Domain;
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Mfa;
 
-public sealed class MfaMethod : AggregateRoot, ITenantScoped
+public sealed class MfaMethod : AggregateRoot
 {
     private readonly List<RecoveryCode> _recoveryCodes = [];
 
     public Guid Id { get; private set; }
-    public Guid TenantId { get; private set; }
     public Guid UserId { get; private set; }
     public MfaMethodType Type { get; private set; }
     public string SecretHash { get; private set; } = default!;

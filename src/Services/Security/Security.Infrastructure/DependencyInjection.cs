@@ -30,8 +30,9 @@ using Microsoft.AspNetCore.Mvc;
 using BuildingBlocks.Messaging.RabbitMq;
 using MassTransit;
 using Security.Infrastructure.Messaging.Consumers;
-using Security.Application.Abstractions.Tenancy;
-using Security.Infrastructure.Tenancy;
+using Security.Application.Abstractions.Memberships;
+using Security.Application.Common.Tenancy;
+using Security.Infrastructure.Memberships;
 
 namespace Security.Infrastructure;
 
@@ -43,11 +44,9 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("Postgres") ?? throw new InvalidOperationException("Connection string 'Postgres' was not found.");
 
-        services.Configure<MultiTenancyOptions>(configuration.GetSection(MultiTenancyOptions.SectionName));
-        services.AddScoped<ITenantContext, TenantContext>();
-        services.AddScoped<TenantSaveChangesInterceptor>();
+        services.Configure<TenantDefaultsOptions>(configuration.GetSection(TenantDefaultsOptions.SectionName));
 
-        services.AddDbContext<SecurityDbContext>((serviceProvider, options) =>
+        services.AddDbContext<SecurityDbContext>(options =>
         {
             options.UseNpgsql(connectionString, npgsql =>
             {
@@ -55,14 +54,6 @@ public static class DependencyInjection
             });
 
             options.UseOpenIddict();
-
-            // Tenant isolation: stamp TenantId on inserts and block cross-tenant writes.
-            options.AddInterceptors(serviceProvider.GetRequiredService<TenantSaveChangesInterceptor>());
-
-            // Both ends of tenant-scoped required relationships share the same tenant filter,
-            // so the required-navigation/query-filter interaction is intentional and safe.
-            options.ConfigureWarnings(warnings =>
-                warnings.Ignore(CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning));
         });
 
         services.AddStackExchangeRedisCache(options =>
@@ -127,16 +118,6 @@ public static class DependencyInjection
                         if (!Guid.TryParse(sub, out var userId))
                         {
                             context.Fail("Token does not contain a valid subject.");
-                            return;
-                        }
-
-                        var multiTenancyOptions = context.HttpContext.RequestServices
-                            .GetRequiredService<IOptions<MultiTenancyOptions>>().Value;
-
-                        if (multiTenancyOptions.Enabled &&
-                            !Guid.TryParse(principal.FindFirst(CustomClaimTypes.TenantId)?.Value, out _))
-                        {
-                            context.Fail("Token does not contain a valid tenant.");
                             return;
                         }
 
@@ -254,6 +235,18 @@ public static class DependencyInjection
 
             options.AddPolicy(PermissionCodes.SessionsManage, policy =>
                 policy.Requirements.Add(new PermissionRequirement(PermissionCodes.SessionsManage)));
+
+            options.AddPolicy(PermissionCodes.MembersRead, policy =>
+                policy.Requirements.Add(new PermissionRequirement(PermissionCodes.MembersRead)));
+
+            options.AddPolicy(PermissionCodes.MembersManage, policy =>
+                policy.Requirements.Add(new PermissionRequirement(PermissionCodes.MembersManage)));
+
+            options.AddPolicy(PermissionCodes.TenantsRead, policy =>
+                policy.Requirements.Add(new PermissionRequirement(PermissionCodes.TenantsRead)));
+
+            options.AddPolicy(PermissionCodes.TenantsManage, policy =>
+                policy.Requirements.Add(new PermissionRequirement(PermissionCodes.TenantsManage)));
         });
 
         services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
@@ -261,6 +254,10 @@ public static class DependencyInjection
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IMembershipRepository, MembershipRepository>();
+        services.AddScoped<IUserPlatformRoleRepository, UserPlatformRoleRepository>();
+        services.AddScoped<IMembershipQueryService, MembershipQueryService>();
+        services.AddScoped<ITenantAccessAuthorizer, TenantAccessAuthorizer>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IRefreshSessionRepository, RefreshSessionRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();

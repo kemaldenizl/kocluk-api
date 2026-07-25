@@ -15,7 +15,12 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.HasTenantId();
+        // Null for platform-scoped roles; set for tenant-scoped roles.
+        builder.Property(x => x.TenantId);
+
+        builder.Property(x => x.Scope)
+            .HasConversion<int>()
+            .IsRequired();
 
         builder.Property(x => x.Name)
             .HasMaxLength(200)
@@ -25,9 +30,17 @@ public sealed class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasMaxLength(200)
             .IsRequired();
 
+        // Tenant roles: unique per (tenant, name). Only applies to rows that have a tenant.
         builder.HasIndex(x => new { x.TenantId, x.NormalizedName })
             .IsUnique()
+            .HasFilter("\"TenantId\" IS NOT NULL")
             .HasDatabaseName("ix_roles_tenant_id_normalized_name");
+
+        // Platform roles: unique per name (tenant-independent).
+        builder.HasIndex(x => x.NormalizedName)
+            .IsUnique()
+            .HasFilter("\"TenantId\" IS NULL")
+            .HasDatabaseName("ix_roles_platform_normalized_name");
 
         builder.Ignore(x => x.DomainEvents);
 

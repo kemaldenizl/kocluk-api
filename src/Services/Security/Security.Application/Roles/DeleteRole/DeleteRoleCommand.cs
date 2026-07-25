@@ -4,5 +4,6 @@ using Security.Application.Common.Results;
 namespace Security.Application.Roles.DeleteRole;
 
 public sealed record DeleteRoleCommand(
-    Guid RoleId
+    Guid RoleId,
+    Guid CallerUserId
 ) : IRequest<Result>;

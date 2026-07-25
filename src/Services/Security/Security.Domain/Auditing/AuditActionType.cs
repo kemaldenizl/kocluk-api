@@ -35,5 +35,11 @@ public enum AuditActionType
     PasswordChangeCompleted = 31,
     EmailChangeRequested = 32,
     EmailChangeCompleted = 33,
-    UserProfileUpdated = 34
+    UserProfileUpdated = 34,
+    MembershipAdded = 35,
+    MembershipRemoved = 36,
+    MembershipSuspended = 37,
+    MembershipReactivated = 38,
+    MembershipRoleAssigned = 39,
+    MembershipRoleRemoved = 40
 }

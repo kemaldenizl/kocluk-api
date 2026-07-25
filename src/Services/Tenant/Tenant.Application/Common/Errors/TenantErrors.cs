@@ -10,4 +10,8 @@ public static class TenantErrors
     public static readonly Error SlugAlreadyExists = new(
         "tenant.slug_already_exists",
         "A tenant with the same slug already exists.");
+
+    public static readonly Error CannotDeletePublicTenant = new(
+        "tenant.cannot_delete_public",
+        "The public tenant cannot be deleted.");
 }

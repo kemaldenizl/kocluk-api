@@ -24,6 +24,11 @@ public static class ApplicationResultMapper
             detail: error.Description,
             statusCode: StatusCodes.Status409Conflict),
 
+        "tenant.cannot_delete_public" => Results.Problem(
+            title: "Conflict",
+            detail: error.Description,
+            statusCode: StatusCodes.Status409Conflict),
+
         _ => Results.Problem(
             title: "Application error",
             detail: error.Description,

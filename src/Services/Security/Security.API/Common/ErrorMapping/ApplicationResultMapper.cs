@@ -431,6 +431,42 @@ public static class ApplicationResultMapper
                     "Conflict",
                     result.Error.Description)),
 
+            "access.forbidden" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status403Forbidden,
+                    "Forbidden",
+                    result.Error.Description)),
+
+            "membership.not_found" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status404NotFound,
+                    "Membership not found",
+                    result.Error.Description)),
+
+            "membership.already_active" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status409Conflict,
+                    "Conflict",
+                    result.Error.Description)),
+
+            "membership.role_not_in_tenant" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status400BadRequest,
+                    "Invalid role",
+                    result.Error.Description)),
+
+            "tenant.not_found" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status404NotFound,
+                    "Tenant not found",
+                    result.Error.Description)),
+
+            "tenant.inactive" => httpContext.ToProblemResult(
+                httpContext.CreateProblemDetails(
+                    StatusCodes.Status409Conflict,
+                    "Tenant inactive",
+                    result.Error.Description)),
+
             _ => httpContext.ToProblemResult(
                 httpContext.CreateProblemDetails(
                     StatusCodes.Status400BadRequest,

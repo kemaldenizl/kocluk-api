@@ -5,5 +5,6 @@ namespace Security.Application.Roles.AddPermissionToRole;
 
 public sealed record AddPermissionToRoleCommand(
     Guid RoleId,
+    Guid CallerUserId,
     Guid PermissionId
 ) : IRequest<Result>;

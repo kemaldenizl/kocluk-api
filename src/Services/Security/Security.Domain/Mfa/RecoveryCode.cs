@@ -1,11 +1,9 @@
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Mfa;
 
-public sealed class RecoveryCode : ITenantScoped
+public sealed class RecoveryCode
 {
-    public Guid TenantId { get; private set; }
     public Guid Id { get; private set; }
     public Guid MfaMethodId { get; private set; }
     public string CodeHash { get; private set; } = default!;

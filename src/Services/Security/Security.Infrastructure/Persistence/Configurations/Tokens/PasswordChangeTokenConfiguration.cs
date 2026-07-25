@@ -15,8 +15,6 @@ public sealed class PasswordChangeTokenConfiguration : IEntityTypeConfiguration<
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.HasTenantId();
-
         builder.Property(x => x.UserId)
             .IsRequired();
 
@@ -39,8 +37,8 @@ public sealed class PasswordChangeTokenConfiguration : IEntityTypeConfiguration<
             .IsUnique()
             .HasDatabaseName("ix_password_change_tokens_token_hash");
 
-        builder.HasIndex(x => new { x.TenantId, x.UserId })
-            .HasDatabaseName("ix_password_change_tokens_tenant_id_user_id");
+        builder.HasIndex(x => x.UserId)
+            .HasDatabaseName("ix_password_change_tokens_user_id");
 
         builder.HasIndex(x => x.ExpiresAtUtc)
             .HasDatabaseName("ix_password_change_tokens_expires_at_utc");

@@ -15,8 +15,6 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.HasTenantId();
-
         builder.Property(x => x.Email)
             .HasMaxLength(320)
             .IsRequired();
@@ -52,18 +50,11 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.LastLoginAtUtc);
 
-        builder.HasIndex(x => new { x.TenantId, x.NormalizedEmail })
+        // Email is globally unique across the whole platform (tenant-independent login).
+        builder.HasIndex(x => x.NormalizedEmail)
             .IsUnique()
-            .HasDatabaseName("ix_users_tenant_id_normalized_email");
+            .HasDatabaseName("ix_users_normalized_email");
 
         builder.Ignore(x => x.DomainEvents);
-
-        builder.HasMany(x => x.Roles)
-            .WithOne()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Navigation(x => x.Roles)
-            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

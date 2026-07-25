@@ -5,10 +5,12 @@ using Serilog;
 using Serilog.Events;
 using Tenant.API.Common.ErrorMapping;
 using Tenant.API.Endpoints;
+using Tenant.API.Extensions;
 using Tenant.API.HealthChecks;
 using Tenant.Application;
 using Tenant.Infrastructure;
 using Tenant.Infrastructure.Persistence;
+using Tenant.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddTenantAuthentication(builder.Configuration);
 
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -57,8 +60,14 @@ using (var scope = app.Services.CreateScope())
         || app.Environment.IsEnvironment("IntegrationTests"))
     {
         await dbContext.Database.MigrateAsync();
+
+        var seeder = scope.ServiceProvider.GetRequiredService<TenantSeeder>();
+        await seeder.SeedAsync();
     }
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHealthChecks("/health/live", new HealthCheckOptions
 {

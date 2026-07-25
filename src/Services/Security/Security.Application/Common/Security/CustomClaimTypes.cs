@@ -8,5 +8,13 @@ public static class CustomClaimTypes
     public const string Subject = "sub";
     public const string Email = "email";
     public const string IssuedAt = "iat";
-    public const string TenantId = "tenant_id";
+
+    /// <summary>JSON array of the user's active memberships: [{ tenantId, roles[], status }].</summary>
+    public const string Memberships = "memberships";
+
+    /// <summary><c>true</c> when the user holds the platform system-administrator role.</summary>
+    public const string SystemAdmin = "system_admin";
+
+    /// <summary>Name of a tenant-independent platform role held by the user (repeatable).</summary>
+    public const string PlatformRole = "platform_role";
 }

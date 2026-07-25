@@ -30,24 +30,27 @@ Auth is JWT bearer. The flow:
 5. `POST /api/auth/logout` revokes the current session; `logout-all` revokes every
    session for the user.
 
-### Multi-tenancy header
+### No tenant header
 
-The Security service is multi-tenant. Send the tenant id on requests:
+Login is **tenant-independent**: users authenticate with email + password only. There is
+**no `X-Tenant-Id` header** anywhere. A user is globally unique by email and can belong to
+many tenants; `register` enrolls the user into the **public tenant** automatically.
 
-```http
-X-Tenant-Id: 00000000-0000-0000-0000-000000000001
-```
+### Memberships & tenants
 
-`00000000-0000-0000-0000-000000000001` is the default/dev tenant. After login the
-tenant is also embedded in the access token; keep sending the header for
-unauthenticated calls (register/login/forgot-password) so they resolve to the right
-tenant.
+A user's tenant memberships travel inside the access token (see below) and via
+`GET /api/memberships/me`. The user sees data across **all** tenants they are an active
+member of — there is no tenant selection step. Tenant membership is managed under
+`/api/memberships` (add/remove/list members, assign roles); tenant lifecycle (create,
+rename, activate, delete) lives under `/api/tenants` and requires a system administrator.
 
 ### Token payload (access token claims)
 
-The access token carries `sub` (user id), `email`, `jti`, `sid` (session id), tenant
-id, and the user's resolved **permission** claims. The frontend can decode it for
-display, but authorization is always enforced server-side.
+The access token carries `sub` (user id), `email`, `jti`, `sid` (session id), the user's
+resolved **permission** claims (the union across all their active memberships), a
+`system_admin` boolean, and a `memberships` claim — a JSON array of
+`{ tenantId, roles, status }`. The frontend can decode it for display, but authorization
+is always enforced server-side.
 
 ---
 

@@ -1,10 +1,8 @@
-using System.Reflection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Security.Application.Abstractions.Tenancy;
-using Security.Domain.Abstractions;
 using Security.Domain.Authorization;
 using Security.Domain.Auditing;
+using Security.Domain.Memberships;
 using Security.Domain.Sessions;
 using Security.Domain.Tenancy;
 using Security.Domain.Tokens;
@@ -15,16 +13,17 @@ namespace Security.Infrastructure.Persistence;
 
 public sealed class SecurityDbContext : DbContext
 {
-    private readonly ITenantContext _tenantContext;
-
     public DbSet<Tenant> Tenants => Set<Tenant>();
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<UserRole> UserRoles => Set<UserRole>();
+
+    public DbSet<Membership> Memberships => Set<Membership>();
+    public DbSet<MembershipRole> MembershipRoles => Set<MembershipRole>();
 
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<UserPlatformRole> UserPlatformRoles => Set<UserPlatformRole>();
 
     public DbSet<RefreshSession> RefreshSessions => Set<RefreshSession>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
@@ -39,10 +38,9 @@ public sealed class SecurityDbContext : DbContext
     public DbSet<MfaMethod> MfaMethods => Set<MfaMethod>();
     public DbSet<RecoveryCode> RecoveryCodes => Set<RecoveryCode>();
 
-    public SecurityDbContext(DbContextOptions<SecurityDbContext> options, ITenantContext tenantContext)
+    public SecurityDbContext(DbContextOptions<SecurityDbContext> options)
         : base(options)
     {
-        _tenantContext = tenantContext;
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -58,33 +56,5 @@ public sealed class SecurityDbContext : DbContext
         builder.AddOutboxStateEntity();
 
         builder.UseOpenIddict();
-
-        ApplyTenantQueryFilters(builder);
-    }
-
-    /// <summary>
-    /// Applies a per-tenant global query filter to every <see cref="ITenantScoped"/> entity so reads
-    /// are isolated automatically. The filter references the injected <see cref="ITenantContext"/>, which
-    /// EF Core evaluates as a parameter on every query — no repository has to add a tenant predicate.
-    /// </summary>
-    private void ApplyTenantQueryFilters(ModelBuilder builder)
-    {
-        var tenantScopedTypes = builder.Model.GetEntityTypes()
-            .Where(entityType => typeof(ITenantScoped).IsAssignableFrom(entityType.ClrType))
-            .ToList();
-
-        foreach (var entityType in tenantScopedTypes)
-        {
-            typeof(SecurityDbContext)
-                .GetMethod(nameof(SetTenantQueryFilter), BindingFlags.NonPublic | BindingFlags.Instance)!
-                .MakeGenericMethod(entityType.ClrType)
-                .Invoke(this, [builder]);
-        }
-    }
-
-    private void SetTenantQueryFilter<TEntity>(ModelBuilder builder)
-        where TEntity : class, ITenantScoped
-    {
-        builder.Entity<TEntity>().HasQueryFilter(entity => entity.TenantId == _tenantContext.TenantId);
     }
 }

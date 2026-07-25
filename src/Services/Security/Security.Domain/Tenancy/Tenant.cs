@@ -1,13 +1,12 @@
 using BuildingBlocks.Domain;
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Tenancy;
 
 /// <summary>
-/// A tenant is the top-level isolation boundary of the security service. Every tenant-scoped
-/// entity (see <see cref="ITenantScoped"/>) belongs to exactly one tenant. In single-tenant
-/// deployments a single well-known default tenant is used.
+/// Local read model of a tenant, kept in sync with the authoritative Tenant service through integration
+/// events. It is used to validate a tenant (exists/active) when enrolling users via memberships. The
+/// well-known public tenant is the default a self-registered user is enrolled into.
 /// </summary>
 public sealed class Tenant : AggregateRoot
 {

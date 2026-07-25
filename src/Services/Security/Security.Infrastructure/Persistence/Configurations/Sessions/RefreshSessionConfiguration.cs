@@ -15,8 +15,6 @@ public sealed class RefreshSessionConfiguration : IEntityTypeConfiguration<Refre
         builder.Property(x => x.Id)
             .ValueGeneratedNever();
 
-        builder.HasTenantId();
-
         builder.Property(x => x.UserId)
             .IsRequired();
 
@@ -36,11 +34,11 @@ public sealed class RefreshSessionConfiguration : IEntityTypeConfiguration<Refre
 
         builder.Property(x => x.RevokedAtUtc);
 
-        builder.HasIndex(x => new { x.TenantId, x.UserId })
-            .HasDatabaseName("ix_refresh_sessions_tenant_id_user_id");
+        builder.HasIndex(x => x.UserId)
+            .HasDatabaseName("ix_refresh_sessions_user_id");
 
-        builder.HasIndex(x => new { x.TenantId, x.UserId, x.Revoked })
-            .HasDatabaseName("ix_refresh_sessions_tenant_id_user_id_revoked");
+        builder.HasIndex(x => new { x.UserId, x.Revoked })
+            .HasDatabaseName("ix_refresh_sessions_user_id_revoked");
 
         builder.Ignore(x => x.DomainEvents);
 

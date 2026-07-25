@@ -23,11 +23,13 @@ public static class CurrentUserMapper
 
         var jti = principal.FindFirstValue(CustomClaimTypes.JwtId);
 
+        var isSystemAdmin = bool.TryParse(principal.FindFirstValue(CustomClaimTypes.SystemAdmin), out var parsed) && parsed;
+
         var permissions = principal.FindAll(CustomClaimTypes.Permission)
             .Select(x => x.Value)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToArray();
 
-        return new CurrentUser(userId, email, sessionId, jti, permissions);
+        return new CurrentUser(userId, email, sessionId, jti, isSystemAdmin, permissions);
     }
 }

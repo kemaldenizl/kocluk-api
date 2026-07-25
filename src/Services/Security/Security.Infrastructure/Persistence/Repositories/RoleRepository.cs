@@ -1,39 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Security.Application.Abstractions.Persistence;
 using Security.Domain.Authorization;
+using Security.Domain.Memberships;
 
 namespace Security.Infrastructure.Persistence.Repositories;
 
 public sealed class RoleRepository(SecurityDbContext dbContext) : IRoleRepository
 {
-    public async Task<Role?> GetByNormalizedNameAsync(
-        string normalizedName,
-        CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Roles
-            .Include(x => x.Permissions)
-            .FirstOrDefaultAsync(x => x.NormalizedName == normalizedName, cancellationToken);
-    }
-
-    public async Task<IReadOnlyCollection<string>> GetPermissionCodesByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default)
-    {
-        var permissionCodes = await (
-            from userRole in dbContext.UserRoles.AsNoTracking()
-            join rolePermission in dbContext.RolePermissions.AsNoTracking()
-                on userRole.RoleId equals rolePermission.RoleId
-            join permission in dbContext.Permissions.AsNoTracking()
-                on rolePermission.PermissionId equals permission.Id
-            where userRole.UserId == userId
-            select permission.Code
-        )
-        .Distinct()
-        .ToListAsync(cancellationToken);
-
-        return permissionCodes;
-    }
-
     public async Task<Role?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default)
@@ -43,32 +16,47 @@ public sealed class RoleRepository(SecurityDbContext dbContext) : IRoleRepositor
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Role>> GetAllAsync(
+    public async Task<Role?> GetByTenantAndNormalizedNameAsync(
+        Guid tenantId,
+        string normalizedName,
+        CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Roles
+            .Include(x => x.Permissions)
+            .FirstOrDefaultAsync(x => x.TenantId == tenantId && x.NormalizedName == normalizedName, cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<Role>> GetByTenantIdAsync(
+        Guid tenantId,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Roles
             .AsNoTracking()
             .Include(x => x.Permissions)
+            .Where(x => x.TenantId == tenantId)
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> ExistsByNormalizedNameAsync(
+    public async Task<bool> ExistsByTenantAndNormalizedNameAsync(
+        Guid tenantId,
         string normalizedName,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Roles
             .AsNoTracking()
-            .AnyAsync(x => x.NormalizedName == normalizedName, cancellationToken);
+            .AnyAsync(x => x.TenantId == tenantId && x.NormalizedName == normalizedName, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<Guid>> GetUserIdsByRoleIdAsync(
+    public async Task<IReadOnlyCollection<Guid>> GetActiveUserIdsByRoleIdAsync(
         Guid roleId,
         CancellationToken cancellationToken = default)
     {
-        return await dbContext.UserRoles
-            .AsNoTracking()
-            .Where(x => x.RoleId == roleId)
-            .Select(x => x.UserId)
+        return await (
+            from membershipRole in dbContext.MembershipRoles.AsNoTracking()
+            join membership in dbContext.Memberships.AsNoTracking()
+                on membershipRole.MembershipId equals membership.Id
+            where membershipRole.RoleId == roleId && membership.Status == MembershipStatus.Active
+            select membership.UserId)
             .Distinct()
             .ToListAsync(cancellationToken);
     }
