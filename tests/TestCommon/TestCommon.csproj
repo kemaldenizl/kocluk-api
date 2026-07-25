@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <!--
+    Shared test kernel. Holds deterministic clocks, id helpers and domain builders so that the
+    individual test projects (UnitTests, IntegrationTests, FunctionalTests) never re-create the
+    same fixtures. Kept dependency-light: only what a builder needs to construct a valid aggregate.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Services\Security\Security.Domain\Security.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Tenant\Tenant.Domain\Tenant.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Services\Notification\Notification.Domain\Notification.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

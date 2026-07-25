@@ -95,3 +95,9 @@ app.MapGet("/", () => Results.Ok(new
 app.MapReverseProxy();
 
 app.Run();
+
+/// <summary>
+/// Exposed so functional tests can host the gateway in-process with <c>WebApplicationFactory</c>.
+/// This is a test-seam only and does not change runtime behavior.
+/// </summary>
+public partial class Program;
