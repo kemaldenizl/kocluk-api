@@ -3,7 +3,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Security.Application\Security.Application.csproj" />
     <ProjectReference Include="..\Security.Domain\Security.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Authentication\BuildingBlocks.Authentication.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Messaging.RabbitMq\BuildingBlocks.Messaging.RabbitMq.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="BuildingBlocks.Authorization" />
+    <Using Include="BuildingBlocks.Authentication" />
   </ItemGroup>
 
   <ItemGroup>

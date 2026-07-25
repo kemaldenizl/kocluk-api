@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Security.Application.Abstractions.Authentication;
 using Security.Application.Abstractions.Memberships;
 using Security.Application.Auth.Dtos;
-using Security.Application.Common.Security;
 
 namespace Security.Infrastructure.Security.Jwt;
 

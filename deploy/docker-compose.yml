@@ -113,6 +113,9 @@ services:
       RabbitMq__Host: rabbitmq
       RabbitMq__Username: ${RABBITMQ_USER:-kocluk}
       RabbitMq__Password: ${RABBITMQ_PASSWORD:-kocluk}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-SecurityService}
+      Jwt__Audience: ${JWT_AUDIENCE:-SecurityService.Clients}
     ports:
       - "${TENANT_PORT:-8082}:8080"
     depends_on:
@@ -160,6 +163,9 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ReverseProxy__Clusters__security-cluster__Destinations__primary__Address: "http://security-api:8080/"
       ReverseProxy__Clusters__tenant-cluster__Destinations__primary__Address: "http://tenant-api:8080/"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-SecurityService}
+      Jwt__Audience: ${JWT_AUDIENCE:-SecurityService.Clients}
     ports:
       - "${GATEWAY_PORT:-8080}:8080"
     depends_on:

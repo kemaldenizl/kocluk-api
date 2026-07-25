@@ -1,8 +1,13 @@
+using BuildingBlocks.Authorization;
 using Microsoft.AspNetCore.Authorization;
-using Security.Application.Common.Security;
 
-namespace Security.Infrastructure.Authorization;
+namespace BuildingBlocks.Authentication;
 
+/// <summary>
+/// Succeeds when the caller's access token carries a <c>permission</c> claim matching the required
+/// code (case-insensitive). The token embeds the flattened union of the user's permissions, so this
+/// check is a pure claim lookup with no I/O.
+/// </summary>
 public sealed class PermissionAuthorizationHandler
     : AuthorizationHandler<PermissionRequirement>
 {

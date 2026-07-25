@@ -1,10 +1,14 @@
 using System.Security.Claims;
-using Security.Application.Common.Security;
+using BuildingBlocks.Authorization;
 
-namespace Security.API.Common.Auth;
+namespace BuildingBlocks.Authentication;
 
-public static class CurrentUserMapper
+public static class ClaimsPrincipalExtensions
 {
+    /// <summary>
+    /// Projects an authenticated principal into a <see cref="CurrentUser"/>. Throws when the
+    /// principal lacks a valid subject; call only on requests that passed authentication.
+    /// </summary>
     public static CurrentUser ToCurrentUser(this ClaimsPrincipal principal)
     {
         var sub = principal.FindFirstValue(CustomClaimTypes.Subject);

@@ -1,5 +1,9 @@
-namespace Security.Application.Common.Security;
+namespace BuildingBlocks.Authorization;
 
+/// <summary>
+/// Claim type names carried by the Security-issued access token. Shared so every service reads the
+/// same claims without redefining the string constants.
+/// </summary>
 public static class CustomClaimTypes
 {
     public const string Permission = "permission";

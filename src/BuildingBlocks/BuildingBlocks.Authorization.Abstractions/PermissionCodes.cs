@@ -1,5 +1,10 @@
-namespace Security.Domain.Authorization;
+namespace BuildingBlocks.Authorization;
 
+/// <summary>
+/// Canonical permission codes issued in the access token's <c>permission</c> claims and used as
+/// authorization policy names across every service. This is the single source of truth: the
+/// Security service seeds and issues them, and any microservice protects its routes against them.
+/// </summary>
 public static class PermissionCodes
 {
     public const string UsersRead = "users.read";

@@ -1,5 +1,4 @@
 using MediatR;
-using Tenant.API.Authorization;
 using Tenant.API.Common.ErrorMapping;
 using Tenant.API.Contracts.Tenants;
 using Tenant.Application.Tenants.ActivateTenant;
@@ -22,22 +21,26 @@ public static class TenantEndpoints
             .RequireAuthorization();
 
         group.MapGet("/", GetTenantsAsync)
+            .RequireAuthorization(PermissionCodes.TenantsRead)
             .WithName("GetTenants")
             .WithSummary("Lists all tenants.")
             .Produces<IReadOnlyCollection<TenantResponse>>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .WithOpenApi();
 
         group.MapGet("/{id:guid}", GetTenantByIdAsync)
+            .RequireAuthorization(PermissionCodes.TenantsRead)
             .WithName("GetTenantById")
             .WithSummary("Gets a tenant by id.")
             .Produces<TenantResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
         group.MapPost("/", CreateTenantAsync)
-            .RequireAuthorization(AuthorizationPolicies.SystemAdmin)
+            .RequireAuthorization(PermissionCodes.TenantsManage)
             .WithName("CreateTenant")
             .WithSummary("Creates a new tenant.")
             .Accepts<CreateTenantRequest>("application/json")
@@ -49,7 +52,7 @@ public static class TenantEndpoints
             .WithOpenApi();
 
         group.MapPut("/{id:guid}", RenameTenantAsync)
-            .RequireAuthorization(AuthorizationPolicies.SystemAdmin)
+            .RequireAuthorization(PermissionCodes.TenantsManage)
             .WithName("RenameTenant")
             .WithSummary("Renames a tenant.")
             .Accepts<RenameTenantRequest>("application/json")
@@ -61,7 +64,7 @@ public static class TenantEndpoints
             .WithOpenApi();
 
         group.MapPost("/{id:guid}/activate", ActivateTenantAsync)
-            .RequireAuthorization(AuthorizationPolicies.SystemAdmin)
+            .RequireAuthorization(PermissionCodes.TenantsManage)
             .WithName("ActivateTenant")
             .WithSummary("Activates a tenant.")
             .Produces(StatusCodes.Status204NoContent)
@@ -71,7 +74,7 @@ public static class TenantEndpoints
             .WithOpenApi();
 
         group.MapPost("/{id:guid}/deactivate", DeactivateTenantAsync)
-            .RequireAuthorization(AuthorizationPolicies.SystemAdmin)
+            .RequireAuthorization(PermissionCodes.TenantsManage)
             .WithName("DeactivateTenant")
             .WithSummary("Deactivates a tenant.")
             .Produces(StatusCodes.Status204NoContent)
@@ -81,7 +84,7 @@ public static class TenantEndpoints
             .WithOpenApi();
 
         group.MapDelete("/{id:guid}", DeleteTenantAsync)
-            .RequireAuthorization(AuthorizationPolicies.SystemAdmin)
+            .RequireAuthorization(PermissionCodes.TenantsManage)
             .WithName("DeleteTenant")
             .WithSummary("Deletes a tenant.")
             .Produces(StatusCodes.Status204NoContent)

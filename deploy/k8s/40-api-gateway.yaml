@@ -20,6 +20,9 @@ spec:
             - containerPort: 8080
           envFrom:
             - configMapRef: { name: kocluk-config }
+          env:
+            - name: Jwt__SigningKey
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Jwt__SigningKey } }
           livenessProbe:
             httpGet: { path: /health/live, port: 8080 }
             initialDelaySeconds: 10

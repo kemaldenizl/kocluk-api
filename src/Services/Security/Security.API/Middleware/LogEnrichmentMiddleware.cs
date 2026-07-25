@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Serilog.Context;
-using Security.Application.Common.Security;
 
 namespace Security.API.Middleware;
 

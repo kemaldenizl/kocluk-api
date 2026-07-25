@@ -5,7 +5,6 @@ using Serilog;
 using Serilog.Events;
 using Tenant.API.Common.ErrorMapping;
 using Tenant.API.Endpoints;
-using Tenant.API.Extensions;
 using Tenant.API.HealthChecks;
 using Tenant.Application;
 using Tenant.Infrastructure;
@@ -28,7 +27,13 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddTenantAuthentication(builder.Configuration);
+
+// Shared JWT validation + fine-grained permission authorization from the building block. Only the
+// tenant permissions are exposed here; the Security service remains the source of truth for issuing
+// them. No IAccessTokenValidator is registered, so this service needs no Redis for token revocation.
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddPermissionAuthorization([PermissionCodes.TenantsRead, PermissionCodes.TenantsManage]);
+builder.Services.AddCurrentUser();
 
 builder.Services.AddExceptionHandler<ValidationExceptionHandler>();
 builder.Services.AddProblemDetails();

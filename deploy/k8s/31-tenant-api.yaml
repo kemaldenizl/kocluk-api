@@ -27,6 +27,8 @@ spec:
               valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_USER } }
             - name: RabbitMq__Password
               valueFrom: { secretKeyRef: { name: kocluk-secrets, key: RABBITMQ_PASSWORD } }
+            - name: Jwt__SigningKey
+              valueFrom: { secretKeyRef: { name: kocluk-secrets, key: Jwt__SigningKey } }
           livenessProbe:
             httpGet: { path: /health/live, port: 8080 }
             initialDelaySeconds: 20
