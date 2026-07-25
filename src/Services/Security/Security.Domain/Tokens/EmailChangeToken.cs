@@ -1,11 +1,9 @@
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Tokens;
 
-public sealed class EmailChangeToken : ITenantScoped
+public sealed class EmailChangeToken
 {
-    public Guid TenantId { get; private set; }
     public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public string TokenHash { get; private set; } = default!;

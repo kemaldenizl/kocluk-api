@@ -1,13 +1,11 @@
 using BuildingBlocks.Domain;
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Auditing;
 
-public sealed class AuditLog : AggregateRoot, ITenantScoped
+public sealed class AuditLog : AggregateRoot
 {
     public Guid Id { get; private set; }
-    public Guid TenantId { get; private set; }
     public Guid? UserId { get; private set; }
     public AuditActionType ActionType { get; private set; }
     public string IpAddress { get; private set; } = default!;

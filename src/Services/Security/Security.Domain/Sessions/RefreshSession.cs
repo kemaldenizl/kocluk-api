@@ -1,15 +1,13 @@
 using BuildingBlocks.Domain;
-using Security.Domain.Abstractions;
 using Security.Domain.Common;
 
 namespace Security.Domain.Sessions;
 
-public sealed class RefreshSession : AggregateRoot, ITenantScoped
+public sealed class RefreshSession : AggregateRoot
 {
     private readonly List<RefreshToken> _tokens = [];
 
     public Guid Id { get; private set; }
-    public Guid TenantId { get; private set; }
     public Guid UserId { get; private set; }
     public string DeviceName { get; private set; } = default!;
     public string IpAddress { get; private set; } = default!;
