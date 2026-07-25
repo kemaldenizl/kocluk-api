@@ -20,7 +20,6 @@ public sealed class UserRepository(SecurityDbContext dbContext) : IUserRepositor
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Users
-            .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.NormalizedEmail == normalizedEmail, cancellationToken);
     }
 
@@ -29,7 +28,6 @@ public sealed class UserRepository(SecurityDbContext dbContext) : IUserRepositor
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Users
-            .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

@@ -60,8 +60,6 @@ public sealed class HttpRequestContext(IHttpContextAccessor httpContextAccessor)
 
     public Guid? SessionId => ParseGuidClaim(CustomClaimTypes.SessionId);
 
-    public Guid? TenantId => ParseGuidClaim(CustomClaimTypes.TenantId);
-
     public string? AccessTokenJti => _httpContext?.User.FindFirstValue(CustomClaimTypes.JwtId);
 
     private Guid? ParseGuidClaim(string claimType)

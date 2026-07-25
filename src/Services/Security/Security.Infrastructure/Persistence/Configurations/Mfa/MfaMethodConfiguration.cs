@@ -13,7 +13,6 @@ public sealed class MfaMethodConfiguration : IEntityTypeConfiguration<MfaMethod>
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id).ValueGeneratedNever();
-        builder.HasTenantId();
         builder.Property(x => x.UserId).IsRequired();
         builder.Property(x => x.Type).HasConversion<int>().IsRequired();
         builder.Property(x => x.SecretHash).HasMaxLength(128).IsRequired();

@@ -13,7 +13,6 @@ public sealed class RecoveryCodeConfiguration : IEntityTypeConfiguration<Recover
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id).ValueGeneratedNever();
-        builder.HasTenantId();
         builder.Property(x => x.MfaMethodId).IsRequired();
         builder.Property(x => x.CodeHash).HasMaxLength(128).IsRequired();
         builder.Property(x => x.Used).IsRequired();
