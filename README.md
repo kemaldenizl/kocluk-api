@@ -30,12 +30,18 @@ A **YARP** API gateway sits in front and is the single public entrypoint.
 | Service            | Responsibility                                             | Depends on                     | Public via gateway |
 |--------------------|------------------------------------------------------------|--------------------------------|--------------------|
 | **API Gateway**    | Reverse proxy, routing, CORS, single entrypoint            | Security, Tenant               | —                  |
-| **Security.API**   | Auth (JWT), users, roles, permissions, sessions, MFA       | PostgreSQL, Redis, RabbitMQ    | ✅ `/api/auth`, `/api/users`, `/api/roles`, `/api/permissions`, `/api/sessions`, `/api/mfa` |
+| **Security.API**   | Auth (JWT), users, memberships, roles, permissions, sessions, MFA | PostgreSQL, Redis, RabbitMQ | ✅ `/api/auth`, `/api/users`, `/api/memberships`, `/api/roles`, `/api/permissions`, `/api/sessions`, `/api/mfa` |
 | **Tenant.API**     | Tenant lifecycle (create/rename/activate/deactivate/delete)| PostgreSQL, RabbitMQ           | ✅ `/api/tenants`  |
 | **Notification.API**| Consumes integration events, sends emails (Resend)        | PostgreSQL, RabbitMQ           | ❌ internal only   |
 
-Multi-tenancy is header-driven (`X-Tenant-Id`). Security publishes/consumes tenant
-lifecycle events so each service keeps its own view of tenants consistent.
+Users log in with **email + password only** — there is no tenant header. A user is
+**globally unique by email** and can belong to many tenants through **memberships**
+(each with its own tenant roles and status; removed memberships are kept for history).
+Self-registration enrolls the user into the **public tenant** (the seeded default tenant
+id). The access token carries a `memberships` claim (per-tenant roles + status) and a
+`system_admin` claim; a system administrator (a platform-scoped role) can access and
+manage every tenant. The Tenant service owns the tenant lifecycle and publishes/consumes
+integration events so each service keeps its own view of tenants consistent.
 
 ---
 
@@ -161,10 +167,10 @@ Key settings (all overridable via env):
 | Postgres connection             | `ConnectionStrings__Postgres`             | all services   |
 | Redis connection                | `ConnectionStrings__Redis`                | Security       |
 | RabbitMQ host / user / pass     | `RabbitMq__Host` / `__Username` / `__Password` | all services |
-| JWT signing key (≥ 32 chars)    | `Jwt__SigningKey`                         | Security       |
-| JWT issuer / audience           | `Jwt__Issuer` / `Jwt__Audience`           | Security       |
+| JWT signing key (≥ 32 chars)    | `Jwt__SigningKey`                         | Security, Tenant |
+| JWT issuer / audience           | `Jwt__Issuer` / `Jwt__Audience`           | Security, Tenant |
 | Seeded admin                    | `IdentitySeed__AdminEmail` / `__AdminPassword` | Security  |
-| Multi-tenancy toggle / header   | `MultiTenancy__Enabled` / `__HeaderName`  | Security       |
+| Public tenant id                | `Tenancy__PublicTenantId`                 | Security, Tenant |
 | Resend email API key            | `Resend__ApiKey`                          | Notification   |
 | Gateway → service addresses     | `ReverseProxy__Clusters__<cluster>__Destinations__primary__Address` | Gateway |
 

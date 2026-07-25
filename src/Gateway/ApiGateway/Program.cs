@@ -80,7 +80,7 @@ app.MapGet("/", () => Results.Ok(new
 }));
 
 // All /api/** traffic is matched by the reverse-proxy routes and forwarded to the
-// owning microservice. Authorization/X-Tenant-Id headers are passed through untouched.
+// owning microservice. The Authorization header is passed through untouched.
 app.MapReverseProxy();
 
 app.Run();
